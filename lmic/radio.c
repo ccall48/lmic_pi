@@ -469,7 +469,7 @@ static void txfsk () {
 
 static void txlora () {
     // select LoRa modem (from sleep mode)
-    //writeReg(RegOpMode, OPMODE_LORA);
+    writeReg(RegOpMode, OPMODE_LORA);
     opmodeLora();
     ASSERT((readReg(RegOpMode) & OPMODE_LORA) != 0);
 
@@ -509,7 +509,7 @@ static void txlora () {
 
 // start transmitter (buf=LMIC.frame, len=LMIC.dataLen)
 static void starttx () {
-    ASSERT( (readReg(RegOpMode) & OPMODE_MASK) == OPMODE_SLEEP );
+    //ASSERT( (readReg(RegOpMode) & OPMODE_MASK) == OPMODE_SLEEP );
     if(getSf(LMIC.rps) == FSK) { // FSK modem
         txfsk();
     } else { // LoRa modem
@@ -531,7 +531,7 @@ static const u1_t rxlorairqmask[] = {
 static void rxlora (u1_t rxmode) {
     // select LoRa modem (from sleep mode)
     opmodeLora();
-    ASSERT((readReg(RegOpMode) & OPMODE_LORA) != 0);
+    //ASSERT((readReg(RegOpMode) & OPMODE_LORA) != 0);
     // enter standby mode (warm up))
     opmode(OPMODE_STANDBY);
     // don't use MAC settings at startup
@@ -626,7 +626,7 @@ static void rxfsk (u1_t rxmode) {
 }
 
 static void startrx (u1_t rxmode) {
-    ASSERT( (readReg(RegOpMode) & OPMODE_MASK) == OPMODE_SLEEP );
+    //ASSERT( (readReg(RegOpMode) & OPMODE_MASK) == OPMODE_SLEEP );
     if(getSf(LMIC.rps) == FSK) { // FSK modem
         rxfsk(rxmode);
     } else { // LoRa modem
@@ -660,7 +660,7 @@ void radio_init () {
 
     // some sanity checks, e.g., read version number
 #ifdef CFG_sx1276_radio
-    ASSERT(v == 0x12 ); 
+    ASSERT(v == 0x12 );
 #elif CFG_sx1272_radio
     ASSERT(v == 0x22);
 #else
@@ -738,7 +738,7 @@ static const u2_t LORA_RXDONE_FIXUP[] = {
 // (radio goes to stanby mode after tx/rx operations)
 void radio_irq_handler (u1_t dio) {
     ostime_t now = os_getTime();
-    if( (readReg(RegOpMode) & OPMODE_LORA) != 0) { // LORA modem
+    if( 1) {//(readReg(RegOpMode) & OPMODE_LORA) != 0) { // LORA modem
         u1_t flags = readReg(LORARegIrqFlags);
         if( flags & IRQ_LORA_TXDONE_MASK ) {
             // save exact tx time
@@ -802,7 +802,6 @@ void os_radio (u1_t mode) {
     switch (mode) {
       case RADIO_RST:
         // put radio to sleep
-        opmode(OPMODE_SLEEP);
         break;
 
       case RADIO_TX:
