@@ -29,16 +29,16 @@ Standard connections are:
   
   3.3V  == +3.3V
  
-This version has some modifications to the thethingsnetwork-send-v1 example. The executable now runs a socket server and receives strings from the ttn-send client program and sends them out during the upload cycle.
+This version has some modifications to the thethingsnetwork-send-v1 example. The executable now runs a mqtt server and receives strings from the ttn-send client program and sends them out during the upload cycle. To compile the sample you will need to mosquitto-dev package installed
 
 An example run is this:
 
-Start the lmic core and a socket server listening on port 8877:
-./thethingsnetwork-send-v1 -p 8877 &
+Start the lmic core and the mqtt server:
+./thethingsnetwork-send-v1 -p 1883 &
 
-Send strings to the server:
+Send strings to the mqtt broker:
 
-./send-ttn -p 8877 -h 127.0.0.1 -a 70B3D57ED0012BD2 -d 0047F5BD541A3688 -n 760A9100DF266D853F42EAFE47B81530 -s 3BDCBA20FE2F99B9A1A2FAD989B0A520 -e 2602119A -x 010203040506
+./send-ttn -p 1883 -h 127.0.0.1 -a 70B3D57ED0012BD2 -d 0047F5BD541A3688 -n 760A9100DF266D853F42EAFE47B81530 -s 3BDCBA20FE2F99B9A1A2FAD989B0A520 -e 2602119A -x 010203040506
 
 Args are:
 

@@ -427,7 +427,8 @@ static void configPower () {
 static void txfsk () {
     // select FSK modem (from sleep mode)
     writeReg(RegOpMode, 0x10); // FSK, BT=0.5
-    ASSERT(readReg(RegOpMode) == 0x10);
+    //ASSERT(readReg(RegOpMode) == 0x10);
+    if (readReg(RegOpMode) != 0x10) return;
     // enter standby mode (required for FIFO loading))
     opmode(OPMODE_STANDBY);
     // set bitrate
@@ -471,7 +472,8 @@ static void txlora () {
     // select LoRa modem (from sleep mode)
     writeReg(RegOpMode, OPMODE_LORA);
     opmodeLora();
-    ASSERT((readReg(RegOpMode) & OPMODE_LORA) != 0);
+    //ASSERT((readReg(RegOpMode) & OPMODE_LORA) != 0);
+    if((readReg(RegOpMode) & OPMODE_LORA) == 0) return;
 
     // enter standby mode (required for FIFO loading))
     opmode(OPMODE_STANDBY);
@@ -510,6 +512,7 @@ static void txlora () {
 // start transmitter (buf=LMIC.frame, len=LMIC.dataLen)
 static void starttx () {
     //ASSERT( (readReg(RegOpMode) & OPMODE_MASK) == OPMODE_SLEEP );
+    if ( (readReg(RegOpMode) & OPMODE_MASK) != OPMODE_SLEEP ) return;
     if(getSf(LMIC.rps) == FSK) { // FSK modem
         txfsk();
     } else { // LoRa modem
@@ -532,6 +535,7 @@ static void rxlora (u1_t rxmode) {
     // select LoRa modem (from sleep mode)
     opmodeLora();
     //ASSERT((readReg(RegOpMode) & OPMODE_LORA) != 0);
+    if ((readReg(RegOpMode) & OPMODE_LORA) == 0) return;
     // enter standby mode (warm up))
     opmode(OPMODE_STANDBY);
     // don't use MAC settings at startup
@@ -577,10 +581,12 @@ static void rxlora (u1_t rxmode) {
 static void rxfsk (u1_t rxmode) {
     // only single rx (no continuous scanning, no noise sampling)
     ASSERT( rxmode == RXMODE_SINGLE );
+    if ( rxmode != RXMODE_SINGLE ) return;
     // select FSK modem (from sleep mode)
     //writeReg(RegOpMode, 0x00); // (not LoRa)
     opmodeFSK();
-    ASSERT((readReg(RegOpMode) & OPMODE_LORA) == 0);
+    //ASSERT((readReg(RegOpMode) & OPMODE_LORA) == 0);
+    if ((readReg(RegOpMode) & OPMODE_LORA) != 0) return;
     // enter standby mode (warm up))
     opmode(OPMODE_STANDBY);
     // configure frequency
@@ -627,6 +633,7 @@ static void rxfsk (u1_t rxmode) {
 
 static void startrx (u1_t rxmode) {
     //ASSERT( (readReg(RegOpMode) & OPMODE_MASK) == OPMODE_SLEEP );
+    if ( (readReg(RegOpMode) & OPMODE_MASK) != OPMODE_SLEEP ) {printf("startrx fail"); return;}
     if(getSf(LMIC.rps) == FSK) { // FSK modem
         rxfsk(rxmode);
     } else { // LoRa modem
@@ -660,9 +667,11 @@ void radio_init () {
 
     // some sanity checks, e.g., read version number
 #ifdef CFG_sx1276_radio
-    ASSERT(v == 0x12 );
+    //ASSERT(v == 0x12 );
+    if (v != 0x12) {printf("ERROR IN 0x12 INIT"); return;}
 #elif CFG_sx1272_radio
-    ASSERT(v == 0x22);
+    //ASSERT(v == 0x22);
+    if (v != 0x22 ) {printf("ERROR IN 0x22 INIT"); return;}
 #else
 #error Missing CFG_sx1272_radio/CFG_sx1276_radio
 #endif

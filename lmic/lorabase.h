@@ -117,6 +117,7 @@ enum { DR_PAGE = DR_PAGE_US915 };
 enum
 {
 US915_BASE = 904300000
+//US915_BASE = 902300000
 };
 // Default frequency plan for US 915MHz
 enum { US915_125kHz_UPFBASE = US915_BASE,
