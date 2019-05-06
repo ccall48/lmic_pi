@@ -1,4 +1,4 @@
-# lmic_pi with changes to thethingsnetwork-send-v1 example.
+# lmic_pi with a lmicd example which sends arbitrary bytes to TTN.
 
 Raspberry Pi port LoRaMAC in C / LoRaWAN in C http://www.research.ibm.com/labs/zurich/ics/lrsc/lmic.html
 
@@ -29,12 +29,12 @@ Standard connections are:
   
   3.3V  == +3.3V
  
-This version has some modifications to the thethingsnetwork-send-v1 example. The executable now runs a mqtt server and receives strings from the ttn-send client program and sends them out during the upload cycle. To compile the sample you will need to mosquitto-dev package installed
+This version has a new example called lmicd. This runs a mqtt server and receives strings from the ttn-send client program and sends them out during the upload cycle. To compile the sample you will need to mosquitto-dev package installed
 
 An example run is this:
 
 Start the lmic core and the mqtt server:
-./thethingsnetwork-send-v1 -p 1883 &
+./lmicd -p 1883 &
 
 Send strings to the mqtt broker:
 
@@ -42,13 +42,20 @@ Send strings to the mqtt broker:
 
 Args are:
 
-p - port of server
-h - host of server
+p - port of mqtt server
+
+h - host of mqtt server
+
 a - appeui
+
 d - deveui
-n - network key
-s - session key
+
+n - network key (devkey)
+
+s - session key (artkey)
+
 e - devaddr of node
+
 x - arbitrary string of hex bytes to send
 
-Given the above input it should send the bytes 010203040506 to TTN 
+Given the above input it should send the bytes 010203040506 to TTN.
